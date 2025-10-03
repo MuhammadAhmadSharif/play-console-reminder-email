@@ -479,7 +479,8 @@
             }, 5000);
         }
 
- async function submitConfiguration(event) {
+
+    async function submitConfiguration(event) {
             event.preventDefault();
 
             console.log('Form submitted - starting configuration...');
@@ -511,17 +512,27 @@
 
             try {
                 console.log('Sending POST request to /api/configure...');
+                
+                // Add timeout for Render (first request can take 50+ seconds)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+                
                 const response = await fetch('/api/configure', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(config)
+                    body: JSON.stringify(config),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
 
                 console.log('Response status:', response.status);
                 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
                     throw new Error(`Server returned ${response.status}: ${response.statusText}`);
                 }
 
@@ -536,11 +547,16 @@
                 }
             } catch (error) {
                 console.error('Configuration error:', error);
-                showAlert('âŒ Failed to configure system: ' + error.message, 'error');
+                if (error.name === 'AbortError') {
+                    showAlert('âŒ Request timeout. The server might be waking up from sleep. Please try again in a moment.', 'error');
+                } else {
+                    showAlert('âŒ Failed to configure system: ' + error.message, 'error');
+                }
             } finally {
                 loading.classList.remove('show');
             }
         }
+       
         async function loadStatus() {
             try {
                 const response = await fetch('/api/status');
