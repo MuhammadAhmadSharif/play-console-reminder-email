@@ -479,8 +479,10 @@
             }, 5000);
         }
 
-        async function submitConfiguration(event) {
+ async function submitConfiguration(event) {
             event.preventDefault();
+
+            console.log('Form submitted - starting configuration...');
 
             const testers = getTesters();
             if (testers.length === 0) {
@@ -502,10 +504,13 @@
                 testers: testers
             };
 
+            console.log('Config to send:', { ...config, emailPassword: '***' });
+
             const loading = document.getElementById('loading');
             loading.classList.add('show');
 
             try {
+                console.log('Sending POST request to /api/configure...');
                 const response = await fetch('/api/configure', {
                     method: 'POST',
                     headers: {
@@ -514,21 +519,28 @@
                     body: JSON.stringify(config)
                 });
 
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                }
+
                 const result = await response.json();
+                console.log('Response result:', result);
 
                 if (result.success) {
-                    showAlert('✅ Reminder system configured successfully! Daily reminders will be sent at ' + config.reminderTime, 'success');
+                    showAlert('âœ… Reminder system configured successfully! Daily reminders will be sent at ' + config.reminderTime, 'success');
                     loadStatus();
                 } else {
-                    showAlert('❌ ' + result.message, 'error');
+                    showAlert('âŒ ' + result.message, 'error');
                 }
             } catch (error) {
-                showAlert('❌ Failed to configure system: ' + error.message, 'error');
+                console.error('Configuration error:', error);
+                showAlert('âŒ Failed to configure system: ' + error.message, 'error');
             } finally {
                 loading.classList.remove('show');
             }
         }
-
         async function loadStatus() {
             try {
                 const response = await fetch('/api/status');
