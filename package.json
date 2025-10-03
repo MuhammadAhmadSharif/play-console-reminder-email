@@ -1,18 +1,25 @@
 {
-  "name": "play-console-reminder",
+  "name": "play-console-reminder-system",
   "version": "1.0.0",
-  "type": "module",
+  "description": "Automated daily reminder system for Play Console testers",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node --watch server.js"
   },
+  "keywords": [
+    "play-console",
+    "testing",
+    "reminder",
+    "email",
+    "cron"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "nodemailer": "^6.9.7",
     "node-cron": "^3.0.3"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }

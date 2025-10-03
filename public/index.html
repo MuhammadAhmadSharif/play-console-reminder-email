@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Console Testing Reminder System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card.active {
+            display: block;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .status-item label {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .status-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .testers-section {
+            margin-top: 30px;
+        }
+
+        .tester-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: end;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon {
+            padding: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tester-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Play Console Testing Reminder</h1>
+            <p>Automate daily testing reminders for your app testers</p>
+        </div>
+
+        <div id="statusCard" class="status-card">
+            <h2>📊 Current Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <label>Current Day</label>
+                    <div class="value" id="currentDay">-</div>
+                </div>
+                <div class="status-item">
+                    <label>Total Days</label>
+                    <div class="value" id="totalDays">-</div>
+                </div>
+                <div class="status-item">
+                    <label>Days Remaining</label>
+                    <div class="value" id="daysRemaining">-</div>
+                </div>
+                <div class="status-item">
+                    <label>Testers</label>
+                    <div class="value" id="testersCount">-</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-success btn-small" onclick="triggerReminders()">📧 Send Now</button>
+                <button class="btn btn-secondary btn-small" onclick="testEmail()">🧪 Test Email</button>
+                <button class="btn btn-danger btn-small" onclick="stopSystem()">⛔ Stop System</button>
+            </div>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <div class="card">
+            <h2 class="section-title">⚙️ Configuration</h2>
+
+            <form id="configForm" onsubmit="submitConfiguration(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>App Name *</label>
+                        <input type="text" id="appName" required placeholder="My Awesome App">
+                    </div>
+                    <div class="form-group">
+                        <label>App Version</label>
+                        <input type="text" id="appVersion" placeholder="1.0.0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Play Console Link</label>
+                    <input type="url" id="playConsoleLink" placeholder="https://play.google.com/console/...">
+                    <div class="help-text">Link to your app's Play Console testing page</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email From *</label>
+                        <input type="email" id="emailFrom" required placeholder="your-email@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Password *</label>
+                        <input type="password" id="emailPassword" required placeholder="App-specific password">
+                        <div class="help-text">Use App Password for Gmail (2FA required)</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email Service</label>
+                        <select id="emailService">
+                            <option value="gmail">Gmail</option>
+                            <option value="outlook">Outlook</option>
+                            <option value="yahoo">Yahoo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reminder Time (24h) *</label>
+                        <input type="time" id="reminderTime" required value="09:00">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Timezone</label>
+                        <select id="timezone">
+                            <option value="Asia/Karachi">Asia/Karachi (PKT)</option>
+                            <option value="America/New_York">America/New_York (EST)</option>
+                            <option value="America/Los_Angeles">America/Los_Angeles (PST)</option>
+                            <option value="Europe/London">Europe/London (GMT)</option>
+                            <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                            <option value="Australia/Sydney">Australia/Sydney (AEDT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Testing Days *</label>
+                        <input type="number" id="totalDays" required min="1" max="90" value="14">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" id="startDate" required>
+                </div>
+
+                <div class="testers-section">
+                    <h3 class="section-title">👥 Testers (minimum 1, can add up to 50)</h3>
+                    <div id="testersContainer">
+                        <!-- Tester rows will be added here -->
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="addTesterRow()">+ Add Tester</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Configuring system...</p>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">🚀 Start Reminder System</button>
+                    <button type="button" class="btn btn-secondary" onclick="loadStatus()">🔄 Refresh Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let testerCount = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+
+            // Add initial tester rows
+            for (let i = 0; i < 3; i++) {
+                addTesterRow();
+            }
+
+            // Load status if configured
+            loadStatus();
+        });
+
+        function addTesterRow() {
+            testerCount++;
+            const container = document.getElementById('testersContainer');
+            const row = document.createElement('div');
+            row.className = 'tester-row';
+            row.id = `tester-${testerCount}`;
+            row.innerHTML = `
+                <input type="text" placeholder="Tester Name" class="tester-name" required>
+                <input type="email" placeholder="tester@example.com" class="tester-email" required>
+                <button type="button" class="btn btn-danger btn-icon btn-small" onclick="removeTester(${testerCount})">×</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeTester(id) {
+            const row = document.getElementById(`tester-${id}`);
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function getTesters() {
+            const testers = [];
+            const rows = document.querySelectorAll('.tester-row');
+            rows.forEach(row => {
+                const name = row.querySelector('.tester-name').value.trim();
+                const email = row.querySelector('.tester-email').value.trim();
+                if (name && email) {
+                    testers.push({ name, email });
+                }
+            });
+            return testers;
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = `alert alert-${type} show`;
+            alertBox.textContent = message;
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 5000);
+        }
+
+        async function submitConfiguration(event) {
+            event.preventDefault();
+
+            const testers = getTesters();
+            if (testers.length === 0) {
+                showAlert('Please add at least one tester', 'error');
+                return;
+            }
+
+            const config = {
+                appName: document.getElementById('appName').value,
+                appVersion: document.getElementById('appVersion').value,
+                playConsoleLink: document.getElementById('playConsoleLink').value,
+                emailFrom: document.getElementById('emailFrom').value,
+                emailPassword: document.getElementById('emailPassword').value,
+                emailService: document.getElementById('emailService').value,
+                reminderTime: document.getElementById('reminderTime').value,
+                timezone: document.getElementById('timezone').value,
+                totalDays: document.getElementById('totalDays').value,
+                startDate: document.getElementById('startDate').value,
+                testers: testers
+            };
+
+            const loading = document.getElementById('loading');
+            loading.classList.add('show');
+
+            try {
+                const response = await fetch('/api/configure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Reminder system configured successfully! Daily reminders will be sent at ' + config.reminderTime, 'success');
+                    loadStatus();
+                } else {
+                    showAlert('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Failed to configure system: ' + error.message, 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+
+                if (status.configured) {
+                    document.getElementById('statusCard').classList.add('active');
+                    document.getElementById('currentDay').textContent = status.currentDay;
+                    document.getElementById('totalDays').textContent = status.totalDays;
+                    document.getElementById('daysRemaining').textContent = status.daysRemaining;
+                    document.getElementById('testersCount').textContent = status.testersCount;
+
+                    const progress = Math.min(100, (status.currentDay / status.totalDays) * 100);
+                    const progressFill = document.getElementById('progressFill');
+                    progressFill.style.width = progress + '%';
+                    progressFill.textContent = Math.round(progress) + '%';
+
+                    if (!status.active) {
+                        if (status.currentDay > status.totalDays) {
+                            showAlert('Testing period has ended', 'info');
+                        } else {
+                            showAlert('Testing period has not started yet', 'info');
+                        }
+                    }
+                } else {
+                    document.getElementById('statusCard').classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Failed to load status:', error);
+            }
+        }
+
+        async function triggerReminders() {
+            if (!confirm('Send reminder emails to all testers now?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/trigger', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    const successCount = result.results.filter(r => r.status === 'sent').length;
+                    showAlert(`📧 Sent ${successCount} reminder(s) successfully!`, 'success');
+                } else {
+                    showAlert('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Failed to send reminders: ' + error.message, 'error');
+            }
+        }
+
+        async function testEmail() {
+            const email = prompt('Enter email address for test:');
+            if (!email) return;
+
+            try {
+                const response = await fetch('/api/test-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('✅ Test email sent to ' + email, 'success');
+                } else {
+                    showAlert('❌ ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Failed to send test email: ' + error.message, 'error');
+            }
+        }
+
+        async function stopSystem() {
+            if (!confirm('Are you sure you want to stop the reminder system?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/stop', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('⛔ Reminder system stopped', 'info');
+                    document.getElementById('statusCard').classList.remove('active');
+                }
+            } catch (error) {
+                showAlert('❌ Failed to stop system: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-refresh status every 30 seconds
+        setInterval(loadStatus, 30000);
+    </script>
+</body>
+</html>
