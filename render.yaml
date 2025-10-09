@@ -1,0 +1,26 @@
+services:
+  # Web Service (your main app)
+  - type: web
+    name: play-console-reminder
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
+
+  # Cron Job (sends daily reminders)
+  - type: cron
+    name: play-console-reminder-cron
+    env: node
+    plan: free
+    # This command will run at your specified time
+    # Format: minute hour day month dayOfWeek
+    # Example: "0 9 * * *" = Every day at 9:00 AM UTC
+    # Adjust according to your timezone needs
+    schedule: "0 9 * * *"
+    buildCommand: npm install
+    # This will make a POST request to your web service
+    startCommand: curl -X POST https://play-console-reminder-email.onrender.com/api/cron-trigger
